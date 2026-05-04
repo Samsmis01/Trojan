@@ -3,31 +3,32 @@ const path = require('path');
 
 const dataPath = path.join(__dirname, 'data.json');
 
-// Lire le fichier data.json s'il existe, sinon créer un template
-let data = {
-    token: "",
-    id: "",
-    host: "",
-    text: ""
-};
+let data = { token: "", id: "", host: "", text: "" };
 
 if (fs.existsSync(dataPath)) {
     try {
-        const raw = fs.readFileSync(dataPath, 'utf8');
-        data = JSON.parse(raw);
+        data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+        console.log('📖 data.json existant chargé');
     } catch(e) {
-        console.log('Erreur lecture data.json, création d\'un nouveau');
+        console.log('⚠️ Erreur lecture data.json, création d\'un nouveau');
     }
+} else {
+    console.log('📝 data.json inexistant, création du template');
 }
 
-// Surcharger avec les variables d'environnement (Render)
-if (process.env.TOKEN) data.token = process.env.TOKEN;
-if (process.env.CHAT_ID) data.id = process.env.CHAT_ID;
-if (process.env.HOST) data.host = process.env.HOST;
+if (process.env.TOKEN) {
+    data.token = process.env.TOKEN;
+    console.log('✅ Token chargé depuis variable TOKEN');
+}
+if (process.env.CHAT_ID) {
+    data.id = process.env.CHAT_ID;
+    console.log('✅ Chat ID chargé depuis variable CHAT_ID');
+}
+if (process.env.HOST) {
+    data.host = process.env.HOST;
+    console.log('✅ Host chargé depuis variable HOST');
+}
 
-// Sauvegarder
 fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
-console.log('✅ data.json mis à jour');
-console.log('   Token:', data.token ? '✅ présent' : '❌ manquant');
-console.log('   Chat ID:', data.id ? '✅ présent' : '❌ manquant');
-console.log('   Host:', data.host || '⚠️ vide (utilise localhost:3000)');
+console.log('💾 data.json sauvegardé');
+console.log('   📍 Host:', data.host || '⚠️ non défini');
